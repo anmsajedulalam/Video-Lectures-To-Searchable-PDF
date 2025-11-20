@@ -1,0 +1,94 @@
+Metadata-Version: 2.4
+Name: video-lectures-to-searchable-pdf
+Version: 0.1.0
+Summary: Pipeline to transform webinar videos into searchable slide and transcript PDFs.
+Author: AutoDev Assistant
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: fastapi>=0.115.0
+Requires-Dist: uvicorn[standard]>=0.30.0
+Requires-Dist: langchain==0.0.352
+Requires-Dist: langchain-core<0.2.0,>=0.1.21
+Requires-Dist: langsmith<0.1
+Requires-Dist: pydantic>=2.6
+Requires-Dist: pydantic-settings>=2.4
+Requires-Dist: typer>=0.12.0
+Requires-Dist: rich>=13.7
+Requires-Dist: yt-dlp>=2024.4.9
+Requires-Dist: gdown>=5.1.0
+Requires-Dist: ffmpeg-python>=0.2.0
+Requires-Dist: opencv-python>=4.9.0.80
+Requires-Dist: numpy<2,>=1.26
+Requires-Dist: pillow>=10.2.0
+Requires-Dist: pydub>=0.25.1
+Requires-Dist: soundfile>=0.12.1
+Requires-Dist: torch>=2.2.0
+Requires-Dist: transformers>=4.40.0
+Requires-Dist: accelerate>=0.28.0
+Requires-Dist: faster-whisper>=0.10.0
+Requires-Dist: paddlepaddle>=2.6.0
+Requires-Dist: paddleocr>=2.7.0.3
+Requires-Dist: reportlab>=4.1.0
+Requires-Dist: pypdf>=4.0.0
+Requires-Dist: python-multipart>=0.0.9
+Requires-Dist: jinja2>=3.1.0
+Provides-Extra: dev
+Requires-Dist: pytest>=8.2; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.23; extra == "dev"
+Requires-Dist: ruff>=0.5.5; extra == "dev"
+Requires-Dist: mypy>=1.10; extra == "dev"
+
+ # Video Lectures to Searchable PDFs
+
+Pipeline for turning webinar-style videos into searchable lecture artifacts:
+
+- OCR-driven slide PDF
+- Whisper transcript PDF
+- Slide-aligned combined PDF
+
+## Quickstart
+
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -e .
+vlsp --help
+```
+
+## CLI Usage
+
+```bash
+vlsp run --type local --source /path/to/webinar.mp4
+vlsp run --type youtube --source https://youtu.be/xxxx
+vlsp run --type gdrive --source https://drive.google.com/file/d/ID/view
+```
+
+Outputs land in `data/processed/<video_id>/`.
+
+## API Server
+
+```bash
+uvicorn app.server:app --reload --port 8080
+```
+
+POST payload:
+
+```json
+{
+  "source_type": "youtube",
+  "source": "https://youtu.be/... "
+}
+```
+
+## Components
+
+1. Multi-source ingestion (local path, YouTube URL, Google Drive URL)
+2. Media extraction via FFmpeg (audio WAV + timestamped frames)
+3. GPU-friendly AI models:
+   - `faster-whisper` (Whisper Large V3)
+   - PaddleOCR + LLaVA (via 🤗 Transformers) for slide text
+4. PDF creation using ReportLab + PyPDF
+5. Slide-by-slide synchronization with transcript blocks
+6. FastAPI service & Typer CLI orchestrating the workflow
+
+See `docs/models.md` for recommended checkpoints and VRAM needs.
+

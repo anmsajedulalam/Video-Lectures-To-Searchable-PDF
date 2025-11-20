@@ -1,0 +1,2 @@
+[console_scripts]
+vlsp = app.cli:app
