@@ -1,2 +1,17 @@
+## Video assets
 *.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
 
+## Image assets
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tiff
+
+## Document exports
+*.pdf
