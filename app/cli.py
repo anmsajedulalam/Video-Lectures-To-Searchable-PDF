@@ -9,6 +9,7 @@ from .config import IngestRequest, resolve_settings
 from .pipeline import PipelineRunner
 
 cli = typer.Typer(add_completion=False, help="Video Lectures to Searchable PDFs")
+app = cli  # Expose as `app` for Typer entrypoint in pyproject.toml
 
 
 @cli.command()

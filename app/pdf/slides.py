@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable
 
@@ -21,7 +21,8 @@ from ..models.vision import SlideTextBlock
 class SlidePdfBuilder:
     """Create PDF with slide images and embedded OCR text."""
 
-    settings: Settings = resolve_settings()
+    # Use default_factory to avoid mutable default Settings instance at class definition time.
+    settings: Settings = field(default_factory=resolve_settings)
 
     def build(self, blocks: Iterable[SlideTextBlock], output_path: Path) -> Path:
         output_path.parent.mkdir(parents=True, exist_ok=True)

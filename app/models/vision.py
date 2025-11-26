@@ -34,7 +34,9 @@ class SlideAnalyzer:
         cfg: ModelConfig = self.settings.models
 
         console.log("[bold green]Loading PaddleOCR[/]")
-        self.ocr = PaddleOCR(lang=cfg.ocr_lang, use_gpu=cfg.device == "cuda", show_log=False)
+        # Newer PaddleOCR uses `device` in common args; `use_gpu`/`show_log` are deprecated.
+        paddle_device = "gpu" if cfg.device == "cuda" else "cpu"
+        self.ocr = PaddleOCR(lang=cfg.ocr_lang, device=paddle_device)
 
         if cfg.vlm_model.lower() != "none":
             console.log(f"[bold green]Loading VLM[/] {cfg.vlm_model}")

@@ -6,6 +6,22 @@ Pipeline for turning webinar-style videos into searchable lecture artifacts:
 - Whisper transcript PDF
 - Slide-aligned combined PDF
 
+## Requirements
+
+- **Python**: 3.10+
+- **System binaries**:
+  - `ffmpeg` (for audio + frame extraction)
+- **Hardware**:
+  - CPU-only is supported (default will fall back to CPU).
+  - GPU (CUDA) is recommended for faster Whisper + OCR if available.
+
+On Ubuntu/Debian, install FFmpeg with:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y ffmpeg
+```
+
 ## Quickstart
 
 ```bash
@@ -50,7 +66,7 @@ flowchart LR
 
     DL --> FF[FFmpeg Extractor]
     FF -->|audio| WHISPER[faster-whisper]
-    FF -->|frames| OCR[PaddleOCR + LLaVA]
+    FF -->|frames| OCR[PaddleOCR (+ optional VLM captions)]
 
     WHISPER --> ALIGN[Slide/Text Aligner]
     OCR --> ALIGN
@@ -70,7 +86,8 @@ The CLI (`vlsp`) and FastAPI server share the same pipeline, so you can drive th
 2. **Media Extraction**: FFmpeg splits the video into a high-quality WAV track and evenly spaced video frames with timestamps.
 3. **Speech + Slide Text Understanding**:
    - `faster-whisper` produces bilingual-friendly transcripts and per-segment timestamps.
-   - PaddleOCR extracts slide text from frames, while LLaVA handles dense visual descriptions when text is light.
+   - PaddleOCR extracts slide text from frames.
+   - (Optional) A vision-language model (e.g. BLIP / LLaVA) can generate rich slide captions; this is **disabled by default** to keep VRAM usage modest.
 4. **Alignment**: Transcript chunks are matched to their corresponding slide frames using temporal overlap and cosine similarity on embeddings.
 5. **PDF Generation**:
    - **OCR-driven slide PDF** for crisp slide reproduction with searchable overlays.
@@ -83,10 +100,28 @@ The CLI (`vlsp`) and FastAPI server share the same pipeline, so you can drive th
 1. Multi-source ingestion (local path, YouTube URL, Google Drive URL)
 2. Media extraction via FFmpeg (audio WAV + timestamped frames)
 3. GPU-friendly AI models:
-   - `faster-whisper` (Whisper Large V3)
-   - PaddleOCR + LLaVA (via 🤗 Transformers) for slide text
+   - `faster-whisper` (configurable checkpoint)
+   - PaddleOCR for slide OCR
+   - Optional VLM (BLIP / LLaVA via 🤗 Transformers) for dense slide captions
 4. PDF creation using ReportLab + PyPDF
 5. Slide-by-slide synchronization with transcript blocks
 6. FastAPI service & Typer CLI orchestrating the workflow
 
 See `docs/models.md` for recommended checkpoints and VRAM needs.
+
+## Configuration
+
+All runtime settings are driven by a Pydantic `Settings` model and can be overridden via environment variables:
+
+- **Model selection**:
+  - `MODELS__whisper_model` – e.g. `small`, `medium`, `large-v3` (default: `medium`).
+  - `MODELS__vlm_model` – set to a HF model id (e.g. `Salesforce/blip-image-captioning-base`) to enable captions,
+    or `"none"` (default) to skip VLM entirely.
+  - `MODELS__device` – `cuda` or `cpu` (default: `cuda`, will fall back to CPU if GPU is not available).
+- **Storage paths**:
+  - `PATHS__root` – project root (default: `cwd`).
+  - `PATHS__raw_dir`, `PATHS__processed_dir`, `PATHS__temp_dir` – override data directories if needed.
+- **Binaries**:
+  - `FFMPEG_BINARY` – override the `ffmpeg` executable name/path if it is not on `PATH`.
+
+By default the system runs with **VLM captions off**, uses `ffmpeg` from your `PATH`, and writes results under `data/processed/<video_id>/`.

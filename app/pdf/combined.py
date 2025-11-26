@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable, List
 
@@ -18,7 +18,8 @@ from ..models.vision import SlideTextBlock
 class CombinedPdfBuilder:
     """Place slide image next to synchronized transcript paragraphs."""
 
-    settings: Settings = resolve_settings()
+    # Use default_factory to avoid mutable default Settings instance at class definition time.
+    settings: Settings = field(default_factory=resolve_settings)
 
     def build(
         self,

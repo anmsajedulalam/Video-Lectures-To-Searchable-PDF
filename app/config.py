@@ -52,7 +52,9 @@ class ModelConfig(BaseModel):
 
     whisper_model: str = "medium"
     whisper_language: str | None = None
-    vlm_model: str = "llava-hf/llava-1.5-7b-hf"
+    # Default to no VLM captions to keep GPU/CPU requirements modest.
+    # Override via env: MODELS__vlm_model="Salesforce/blip-image-captioning-base" (or similar).
+    vlm_model: str = "none"
     ocr_lang: str = "en"
     device: str = "cuda"
 
