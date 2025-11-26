@@ -66,7 +66,7 @@ flowchart LR
 
     DL --> FF[FFmpeg Extractor]
     FF -->|audio| WHISPER[faster-whisper]
-    FF -->|frames| OCR[PaddleOCR (+ optional VLM captions)]
+    FF -->|frames| OCR[PaddleOCR and optional VLM captions]
 
     WHISPER --> ALIGN[Slide/Text Aligner]
     OCR --> ALIGN
