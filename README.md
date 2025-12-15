@@ -114,7 +114,7 @@ The CLI (`vlsp`) and FastAPI server share the same pipeline, so you can drive th
 3. GPU-friendly AI models:
    - `faster-whisper` (configurable checkpoint)
    - PaddleOCR for slide OCR
-   - Optional VLM (BLIP / LLaVA via 🤗 Transformers) for dense slide captions
+   - Optional VLM (BLIP / LLaVA via HuggingFace Transformers) for dense slide captions
 4. PDF creation using ReportLab + PyPDF
 5. Slide-by-slide synchronization with transcript blocks
 6. FastAPI service & Typer CLI orchestrating the workflow
