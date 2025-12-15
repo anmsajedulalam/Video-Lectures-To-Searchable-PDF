@@ -22,7 +22,19 @@ sudo apt-get update
 sudo apt-get install -y ffmpeg
 ```
 
-## Quickstart
+## Installation (PyPI)
+
+For most users, install the published package from PyPI:
+
+```bash
+pip install video-lectures-to-searchable-pdf
+```
+
+This will install the CLI entrypoint `vlsp`.
+
+PyPI project page: `https://pypi.org/project/video-lectures-to-searchable-pdf/`
+
+## Quickstart (from source / development)
 
 ```bash
 python -m venv .venv && source .venv/bin/activate
